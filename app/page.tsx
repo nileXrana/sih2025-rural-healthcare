@@ -1,6 +1,11 @@
+'use client';
+
 import Link from "next/link";
+import { useLanguage, LanguageSelector } from "@/lib/LanguageContext";
+import { getTranslation, getTranslationArray } from "@/lib/translations";
 
 export default function Home() {
+  const { language } = useLanguage();
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex flex-col">
       {/* Header */}
@@ -14,8 +19,11 @@ export default function Home() {
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Nabha Sehat Saathi
+                {getTranslation('appTitle', language) as string}
               </h1>
+            </div>
+            <div className="flex items-center">
+              <LanguageSelector />
             </div>
           </div>
         </div>
@@ -27,10 +35,10 @@ export default function Home() {
           {/* Hero Section */}
           <div className="mb-12 mt-5">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Decentralized Healthcare Solution
+              {getTranslation('heroTitle', language) as string}
             </h2>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Connecting Rural MI Rooms of 173 Villages with Nabha Civil Hospital
+              {getTranslation('heroSubtitle', language) as string}
             </p>
           </div>
 
@@ -44,22 +52,21 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                MI Room Incharge
+                {getTranslation('miRoomTitle', language) as string}
               </h3>
               <p className="text-gray-600 mb-6">
-                Register patients, conduct initial examinations, record vital signs, and connect with doctors for consultations.
+                {getTranslation('miRoomDescription', language) as string}
               </p>
               <ul className="text-sm text-gray-600 mb-8 space-y-2">
-                <li>• Patient registration and management</li>
-                <li>• Vital signs recording</li>
-                <li>• Virtual doctor consultations</li>
-                <li>• Appointment scheduling</li>
+                {getTranslationArray('miRoomFeatures', language).map((feature, index) => (
+                  <li key={index}>• {feature}</li>
+                ))}
               </ul>
               <Link
                 href="/mi-room/login"
                 className="inline-block bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
               >
-                MI Room Login
+                {getTranslation('miRoomLogin', language) as string}
               </Link>
             </div>
 
@@ -71,22 +78,21 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                Hospital Doctor
+                {getTranslation('doctorTitle', language) as string}
               </h3>
               <p className="text-gray-600 mb-6">
-                Review consultation requests, access patient records, conduct virtual consultations, and manage referrals.
+                {getTranslation('doctorDescription', language) as string}
               </p>
               <ul className="text-sm text-gray-600 mb-8 space-y-2">
-                <li>• Real-time consultation queue</li>
-                <li>• Complete patient history access</li>
-                <li>• Virtual consultations</li>
-                <li>• E-prescription management</li>
+                {getTranslationArray('doctorFeatures', language).map((feature, index) => (
+                  <li key={index}>• {feature}</li>
+                ))}
               </ul>
               <Link
                 href="/doctor/login"
                 className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
-                Doctor Login
+                {getTranslation('doctorLogin', language) as string}
               </Link>
             </div>
           </div>
@@ -94,7 +100,7 @@ export default function Home() {
           {/* Key Benefits */}
           <div className="bg-white rounded-xl shadow-lg p-8">
             <h3 className="text-2xl font-semibold text-gray-900 mb-6">
-              System Benefits
+              {getTranslation('systemBenefitsTitle', language) as string}
             </h3>
             <div className="grid md:grid-cols-3 gap-6 text-left">
               <div>
@@ -103,9 +109,9 @@ export default function Home() {
                     <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Reduced Doctor Load</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">{getTranslation('reducedLoadTitle', language) as string}</h4>
                 <p className="text-gray-600 text-sm">
-                  Filters 60-70% of non-critical cases, allowing doctors to focus on patients who need expertise.
+                  {getTranslation('reducedLoadDesc', language) as string}
                 </p>
               </div>
               <div>
@@ -114,9 +120,9 @@ export default function Home() {
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Improved Access</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">{getTranslation('improvedAccessTitle', language) as string}</h4>
                 <p className="text-gray-600 text-sm">
-                  Patients get healthcare services in their villages without traveling long distances.
+                  {getTranslation('improvedAccessDesc', language) as string}
                 </p>
               </div>
               <div>
@@ -125,9 +131,9 @@ export default function Home() {
                     <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Efficient Triage</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">{getTranslation('efficientTriageTitle', language) as string}</h4>
                 <p className="text-gray-600 text-sm">
-                  Smart system to differentiate between minor and critical cases for better resource allocation.
+                  {getTranslation('efficientTriageDesc', language) as string}
                 </p>
               </div>
             </div>
@@ -144,28 +150,25 @@ export default function Home() {
                   </svg>
                 </div>
               </div>
-              <h3 className="text-2xl font-bold mb-3">🏥 ਆਪਣੇ ਪਿੰਡ ਵਿੱਚ ਸਿਹਤ ਸੇਵਾ!</h3>
+              <h3 className="text-2xl font-bold mb-3">{getTranslation('villageAwarenessTitle', language) as string}</h3>
               <p className="text-lg mb-4 opacity-95">
-                Healthcare at Your Doorstep! 
+                {getTranslation('villageAwarenessSubtitle', language) as string}
               </p>
               <p className="text-base mb-6 opacity-90 max-w-2xl mx-auto">
-                Every village now has an MI Room facility! Tell your neighbors, friends, and family members 
-                about this amazing healthcare service. Visit your local MI Room for health checkups, 
-                connect with expert doctors virtually, and get treatment without traveling far. 
-                <strong> Help spread awareness - Every village deserves better healthcare!</strong>
+                {getTranslation('villageAwarenessDesc', language) as string}
               </p>
               <div className="flex flex-wrap justify-center gap-4 text-sm">
                 <span className="bg-white bg-opacity-90 text-gray-800 px-4 py-2 rounded-full">
-                  ✅ Free Checkups
+                  {getTranslation('freeCheckups', language) as string}
                 </span>
                 <span className="bg-white bg-opacity-90 text-gray-800 px-4 py-2 rounded-full">
-                  👨‍⚕️ Expert Doctors
+                  {getTranslation('expertDoctors', language) as string}
                 </span>
                 <span className="bg-white bg-opacity-90 text-gray-800 px-4 py-2 rounded-full">
-                  🏠 Village Location
+                  {getTranslation('villageLocation', language) as string}
                 </span>
                 <span className="bg-white bg-opacity-90 text-gray-800 px-4 py-2 rounded-full">
-                  💸 Save Money & Time
+                  {getTranslation('saveMoneyTime', language) as string}
                 </span>
               </div>
             </div>
@@ -178,13 +181,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="text-center">
             <p className="text-gray-600 text-sm mb-2">
-              Healthcare Hub-and-Spoke System - Connecting Rural Health with Expert Care
+              {getTranslation('footerText', language) as string}
             </p>
             <Link
               href="/demo"
               className="inline-block text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
-              📋 View Demo Instructions & Testing Guide
+              {getTranslation('demoInstructions', language) as string}
             </Link>
           </div>
         </div>
