@@ -10,9 +10,13 @@ export async function verifyPassword(password: string, hashedPassword: string): 
 }
 
 export function generateToken(payload: any): string {
-  return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '24h' })
+  const secret = "arvind"
+  console.log('Generating token with secret:', secret, 'and payload:', payload)
+  return jwt.sign(payload, secret, { expiresIn: '24h' })
 }
 
 export function verifyToken(token: string): any {
-  return jwt.verify(token, process.env.JWT_SECRET!)
+  const secret = "arvind"
+  console.log('Verifying token with secret:', secret, 'token:', token.substring(0, 50) + '...')
+  return jwt.verify(token, secret)
 }

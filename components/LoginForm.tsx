@@ -32,13 +32,24 @@ export default function LoginForm({ title, role, redirectPath, className }: Logi
     setIsLoading(true)
     setError('')
 
-    // Simulate login delay for better UX
-    setTimeout(() => {
-      // Direct redirect without authentication (prototype mode)
-      if (role === 'MI_ROOM_INCHARGE') {
-        router.push('/mi-room/dashboard')
-      } else {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          role
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
         router.push(redirectPath)
+      } else {
+        setError(data.error || 'Login failed')
       }
       setIsLoading(false)
     }, 1000)
