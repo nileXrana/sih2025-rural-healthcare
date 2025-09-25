@@ -5,8 +5,14 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   const { pathname } = request.nextUrl
 
-  // Public routes that don't require authentication
-  const publicRoutes = ['/', '/mi-room/login', '/doctor/login', '/api/auth/login']
+  // Public routes that don't require authentication (prototype mode)
+  const publicRoutes = [
+    '/', 
+    '/mi-room/login', 
+    '/mi-room/dashboard',  // Allow direct access to dashboard in prototype mode
+    '/doctor/login', 
+    '/api/auth/login'
+  ]
   
   if (publicRoutes.includes(pathname)) {
     return NextResponse.next()
