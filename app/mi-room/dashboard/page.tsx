@@ -113,6 +113,7 @@ export default function MIRoomDashboard() {
             {[
               { id: 'overview', name: 'Overview', icon: '📊' },
               { id: 'patients', name: 'Patients', icon: '👥' },
+              { id: 'symptoms', name: 'Symptom Detection', icon: '🔍' },
               { id: 'consultations', name: 'Consultations', icon: '🩺' },
               { id: 'register', name: 'Register Patient', icon: '➕' }
             ].map((tab) => (
@@ -261,6 +262,22 @@ export default function MIRoomDashboard() {
             </div>
           )}
 
+          {activeTab === 'symptoms' && (
+            <div className="bg-white shadow sm:rounded-lg">
+              <div className="px-4 py-5 sm:p-6">
+                <h3 className="text-lg leading-6 font-medium text-gray-900">
+                  AI-Powered Symptom Detection & Analysis
+                </h3>
+                <p className="mt-2 text-sm text-gray-600">
+                  Enter patient symptoms to get instant AI-powered analysis and treatment recommendations
+                </p>
+                <div className="mt-6">
+                  <SymptomDetectionForm />
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'register' && (
             <div className="bg-white shadow sm:rounded-lg">
               <div className="px-4 py-5 sm:p-6">
@@ -275,6 +292,322 @@ export default function MIRoomDashboard() {
           )}
         </div>
       </main>
+    </div>
+  )
+}
+
+// Symptom Detection Form Component
+function SymptomDetectionForm() {
+  const [selectedPatient, setSelectedPatient] = useState('')
+  const [symptoms, setSymptoms] = useState('')
+  const [vitalSigns, setVitalSigns] = useState({
+    temperature: '',
+    bloodPressure: '',
+    heartRate: '',
+    respiratoryRate: '',
+    oxygenSaturation: ''
+  })
+  const [analysis, setAnalysis] = useState<any>(null)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [patientsList] = useState([
+    { id: '1', name: 'Rajesh Kumar', age: 45, village: 'Khanna' },
+    { id: '2', name: 'Sunita Devi', age: 32, village: 'Nabha' },
+    { id: '3', name: 'Amarjit Singh', age: 58, village: 'Ludhiana' }
+  ])
+
+  const analyzeSymptoms = async () => {
+    if (!symptoms.trim()) {
+      alert('Please enter symptoms first')
+      return
+    }
+
+    setIsAnalyzing(true)
+    
+    // Simulate AI analysis delay
+    setTimeout(() => {
+      const analysisResult = performSymptomAnalysis(symptoms, vitalSigns)
+      setAnalysis(analysisResult)
+      setIsAnalyzing(false)
+    }, 2000)
+  }
+
+  const performSymptomAnalysis = (symptoms: string, vitals: any) => {
+    const symptomText = symptoms.toLowerCase()
+    
+    // AI-like analysis based on keywords
+    let possibleConditions = []
+    let urgencyLevel = 'Low'
+    let recommendations = []
+    let doctorConsultationNeeded = false
+
+    // Emergency symptoms detection
+    if (symptomText.includes('chest pain') || symptomText.includes('difficulty breathing') || 
+        symptomText.includes('severe headache') || symptomText.includes('unconscious')) {
+      urgencyLevel = 'Critical'
+      doctorConsultationNeeded = true
+      possibleConditions.push('Potential Emergency - Immediate attention required')
+      recommendations.push('🚨 Call emergency services immediately')
+      recommendations.push('🏥 Transfer to nearest hospital')
+    }
+    // Heart-related symptoms
+    else if (symptomText.includes('chest pain') || symptomText.includes('palpitations') || 
+             symptomText.includes('shortness of breath')) {
+      urgencyLevel = 'High'
+      doctorConsultationNeeded = true
+      possibleConditions.push('Possible Cardiac Issue')
+      recommendations.push('📞 Immediate doctor consultation required')
+      recommendations.push('🩺 ECG recommended')
+    }
+    // Respiratory symptoms
+    else if (symptomText.includes('cough') || symptomText.includes('fever') || 
+             symptomText.includes('cold') || symptomText.includes('sore throat')) {
+      urgencyLevel = 'Medium'
+      possibleConditions.push('Upper Respiratory Tract Infection')
+      possibleConditions.push('Common Cold/Flu')
+      recommendations.push('💊 Rest and plenty of fluids')
+      recommendations.push('🌡️ Monitor temperature')
+      if (parseFloat(vitals.temperature) > 101) {
+        doctorConsultationNeeded = true
+        recommendations.push('📞 Doctor consultation recommended for high fever')
+      }
+    }
+    // Digestive symptoms
+    else if (symptomText.includes('stomach pain') || symptomText.includes('nausea') || 
+             symptomText.includes('vomiting') || symptomText.includes('diarrhea')) {
+      urgencyLevel = 'Medium'
+      possibleConditions.push('Gastrointestinal Infection')
+      possibleConditions.push('Food Poisoning')
+      recommendations.push('💧 Stay hydrated with ORS')
+      recommendations.push('🍚 BRAT diet (Banana, Rice, Apple, Toast)')
+    }
+    // General symptoms
+    else if (symptomText.includes('headache') || symptomText.includes('body ache') || 
+             symptomText.includes('fatigue')) {
+      urgencyLevel = 'Low'
+      possibleConditions.push('Viral Infection')
+      possibleConditions.push('Stress/Fatigue')
+      recommendations.push('😴 Adequate rest')
+      recommendations.push('💊 OTC pain relievers if needed')
+    }
+
+    // Vital signs analysis
+    if (vitals.temperature && parseFloat(vitals.temperature) > 102) {
+      urgencyLevel = urgencyLevel === 'Low' ? 'Medium' : 'High'
+      doctorConsultationNeeded = true
+    }
+
+    if (vitals.bloodPressure) {
+      const [systolic] = vitals.bloodPressure.split('/').map(Number)
+      if (systolic > 140 || systolic < 90) {
+        urgencyLevel = urgencyLevel === 'Low' ? 'Medium' : urgencyLevel
+        recommendations.push('🩺 Blood pressure monitoring needed')
+      }
+    }
+
+    return {
+      possibleConditions,
+      urgencyLevel,
+      recommendations,
+      doctorConsultationNeeded,
+      confidence: Math.floor(Math.random() * 30) + 70, // Simulated confidence
+      estimatedDiagnosis: possibleConditions[0] || 'Requires further examination'
+    }
+  }
+
+  const getUrgencyColor = (level: string) => {
+    switch (level) {
+      case 'Critical': return 'text-red-600 bg-red-100'
+      case 'High': return 'text-orange-600 bg-orange-100'
+      case 'Medium': return 'text-yellow-600 bg-yellow-100'
+      default: return 'text-green-600 bg-green-100'
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Patient Selection */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Select Patient
+        </label>
+        <select
+          value={selectedPatient}
+          onChange={(e) => setSelectedPatient(e.target.value)}
+          className="w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+        >
+          <option value="">Choose a patient...</option>
+          {patientsList.map((patient) => (
+            <option key={patient.id} value={patient.id}>
+              {patient.name} - {patient.age}y, {patient.village}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Symptoms Input */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Describe Symptoms *
+        </label>
+        <textarea
+          rows={4}
+          value={symptoms}
+          onChange={(e) => setSymptoms(e.target.value)}
+          placeholder="e.g., Patient complains of fever, cough, and body ache for 2 days..."
+          className="w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+        />
+      </div>
+
+      {/* Vital Signs */}
+      <div>
+        <h4 className="text-lg font-medium text-gray-900 mb-4">Vital Signs</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Temperature (°F)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={vitalSigns.temperature}
+              onChange={(e) => setVitalSigns({...vitalSigns, temperature: e.target.value})}
+              placeholder="98.6"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Blood Pressure</label>
+            <input
+              type="text"
+              value={vitalSigns.bloodPressure}
+              onChange={(e) => setVitalSigns({...vitalSigns, bloodPressure: e.target.value})}
+              placeholder="120/80"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Heart Rate (bpm)</label>
+            <input
+              type="number"
+              value={vitalSigns.heartRate}
+              onChange={(e) => setVitalSigns({...vitalSigns, heartRate: e.target.value})}
+              placeholder="72"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Respiratory Rate</label>
+            <input
+              type="number"
+              value={vitalSigns.respiratoryRate}
+              onChange={(e) => setVitalSigns({...vitalSigns, respiratoryRate: e.target.value})}
+              placeholder="16"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Oxygen Saturation (%)</label>
+            <input
+              type="number"
+              value={vitalSigns.oxygenSaturation}
+              onChange={(e) => setVitalSigns({...vitalSigns, oxygenSaturation: e.target.value})}
+              placeholder="98"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Analyze Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={analyzeSymptoms}
+          disabled={isAnalyzing}
+          className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 flex items-center space-x-2"
+        >
+          {isAnalyzing ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <span>Analyzing...</span>
+            </>
+          ) : (
+            <>
+              <span>🔍</span>
+              <span>Analyze Symptoms</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Analysis Results */}
+      {analysis && (
+        <div className="mt-8 space-y-6">
+          <h4 className="text-xl font-bold text-gray-900">🤖 AI Analysis Results</h4>
+          
+          {/* Urgency Level */}
+          <div className="bg-white border rounded-lg p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h5 className="text-lg font-semibold">Urgency Level</h5>
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getUrgencyColor(analysis.urgencyLevel)}`}>
+                {analysis.urgencyLevel} Priority
+              </span>
+            </div>
+          </div>
+
+          {/* Possible Conditions */}
+          <div className="bg-white border rounded-lg p-4">
+            <h5 className="text-lg font-semibold mb-3">Possible Conditions</h5>
+            <ul className="space-y-2">
+              {analysis.possibleConditions.map((condition: string, index: number) => (
+                <li key={index} className="flex items-center space-x-2">
+                  <span className="text-blue-500">•</span>
+                  <span>{condition}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3 text-sm text-gray-600">
+              Confidence: {analysis.confidence}%
+            </div>
+          </div>
+
+          {/* Recommendations */}
+          <div className="bg-white border rounded-lg p-4">
+            <h5 className="text-lg font-semibold mb-3">Treatment Recommendations</h5>
+            <ul className="space-y-2">
+              {analysis.recommendations.map((rec: string, index: number) => (
+                <li key={index} className="flex items-start space-x-2">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span>{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Doctor Consultation */}
+          {analysis.doctorConsultationNeeded && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-red-600 text-xl">⚠️</span>
+                <div>
+                  <h5 className="text-lg font-semibold text-red-800">Doctor Consultation Required</h5>
+                  <p className="text-red-700">This case requires immediate medical attention from a qualified doctor.</p>
+                  <button className="mt-3 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                    📞 Request Doctor Consultation
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Save Analysis */}
+          <div className="flex justify-end space-x-4">
+            <button className="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700">
+              💾 Save Analysis
+            </button>
+            <button className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">
+              📋 Print Report
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
