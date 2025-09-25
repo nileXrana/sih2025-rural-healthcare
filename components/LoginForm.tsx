@@ -40,7 +40,12 @@ export default function LoginForm({ title, role, redirectPath, className }: Logi
       const data = await response.json()
 
       if (response.ok) {
-        router.push(redirectPath)
+        // Redirect to MI Room dashboard for MI Room Incharge role
+        if (role === 'MI_ROOM_INCHARGE') {
+          router.push('/mi-room/dashboard')
+        } else {
+          router.push(redirectPath)
+        }
       } else {
         setError(data.error || 'Login failed')
       }
