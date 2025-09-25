@@ -5,8 +5,14 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   const { pathname } = request.nextUrl
 
-  // Public routes that don't require authentication
-  const publicRoutes = ['/', '/mi-room/login', '/doctor/login', '/api/auth/login']
+  // Public routes that don't require authentication (prototype mode)
+  const publicRoutes = [
+    '/', 
+    '/mi-room/login', 
+    '/mi-room/dashboard',  // Allow direct access to dashboard in prototype mode
+    '/doctor/login', 
+    '/api/auth/login'
+  ]
   
   if (publicRoutes.includes(pathname)) {
     return NextResponse.next()
@@ -41,7 +47,7 @@ export function middleware(request: NextRequest) {
 
     return NextResponse.next()
   } catch (error) {
-    console.log('Token verification failed:', error.message)
+    console.log('Token verification failed:', error instanceof Error ? error.message : 'Unknown error')
     // Redirect to appropriate login page based on the route
     if (pathname.startsWith('/doctor')) {
       return NextResponse.redirect(new URL('/doctor/login', request.url))

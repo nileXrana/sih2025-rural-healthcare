@@ -29,46 +29,54 @@ export default function MIRoomDashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    checkAuth()
+    // Prototype mode - no authentication required
+    setUser({
+      id: '1',
+      name: 'MI Room Incharge',
+      email: 'incharge@miroom.com',
+      role: 'MI_ROOM_INCHARGE'
+    })
     fetchPatients()
+    setLoading(false)
   }, [])
 
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/auth/me')
-      if (response.ok) {
-        const data = await response.json()
-        setUser(data.user)
-      } else {
-        router.push('/mi-room/login')
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error)
-      router.push('/mi-room/login')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const fetchPatients = async () => {
-    try {
-      const response = await fetch('/api/patients')
-      if (response.ok) {
-        const data = await response.json()
-        setPatients(data.patients || [])
+    // Prototype mode - use mock data
+    const mockPatients = [
+      {
+        id: '1',
+        name: 'Rajesh Kumar',
+        age: 45,
+        gender: 'Male',
+        phone: '+91-9876543210',
+        village: 'Khanna',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '2',
+        name: 'Sunita Devi',
+        age: 32,
+        gender: 'Female',
+        phone: '+91-9876543211',
+        village: 'Nabha',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '3',
+        name: 'Amarjit Singh',
+        age: 58,
+        gender: 'Male',
+        phone: '+91-9876543212',
+        village: 'Ludhiana',
+        createdAt: new Date().toISOString()
       }
-    } catch (error) {
-      console.error('Failed to fetch patients:', error)
-    }
+    ]
+    setPatients(mockPatients)
   }
 
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' })
-      router.push('/')
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
+  const handleLogout = () => {
+    // Prototype mode - direct redirect
+    router.push('/')
   }
 
   if (loading) {

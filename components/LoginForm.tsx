@@ -22,36 +22,21 @@ export default function LoginForm({ title, role, redirectPath, className }: Logi
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Basic validation - just check if fields are not empty
+    if (!formData.email.trim() || !formData.password.trim()) {
+      setError('Please fill in all fields')
+      return
+    }
+
     setIsLoading(true)
     setError('')
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          role
-        }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        console.log('Login successful, redirecting to:', redirectPath)
-        // Use window.location for immediate redirect
-        window.location.href = redirectPath
-      } else {
-        console.log('Login failed:', data.error)
-        setError(data.error || 'Login failed')
-      }
-    } catch (error) {
-      setError('Network error. Please try again.')
-    } finally {
+    // Simulate login delay for better UX (prototype mode)
+    setTimeout(() => {
+      router.push(redirectPath)
       setIsLoading(false)
-    }
+    }, 1000)
   }
 
   return (
@@ -59,9 +44,9 @@ export default function LoginForm({ title, role, redirectPath, className }: Logi
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
         <p className="text-gray-600 mt-2">Please sign in to continue</p>
-        <div className="mt-3 p-3 bg-blue-50 rounded-md text-sm text-blue-700">
-          <p className="font-semibold">Demo Mode: Enter any email and password to login</p>
-          <p className="text-xs mt-1">System will create user automatically for testing</p>
+        <div className="mt-3 p-3 bg-green-50 rounded-md text-sm text-green-700">
+          <p className="font-semibold">🚀 Prototype Mode: Direct Access</p>
+          <p className="text-xs mt-1">Enter any email and password to access the dashboard instantly</p>
         </div>
       </div>
 
