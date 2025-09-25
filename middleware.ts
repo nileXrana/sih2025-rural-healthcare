@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from './lib/auth'
+import { verifyToken } from '@/lib/auth'
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
@@ -14,23 +14,40 @@ export function middleware(request: NextRequest) {
 
   // Check if user is authenticated
   if (!token) {
+    // Redirect to appropriate login page based on the route
+    if (pathname.startsWith('/doctor')) {
+      return NextResponse.redirect(new URL('/doctor/login', request.url))
+    } else if (pathname.startsWith('/mi-room')) {
+      return NextResponse.redirect(new URL('/mi-room/login', request.url))
+    }
     return NextResponse.redirect(new URL('/', request.url))
   }
 
   try {
+    console.log('Verifying token:', token.substring(0, 50) + '...', 'for path:', pathname)
     const decoded = verifyToken(token)
+    console.log('Token verified successfully for role:', decoded.role, 'path:', pathname)
     
     // Role-based route protection
     if (pathname.startsWith('/mi-room') && decoded.role !== 'MI_ROOM_INCHARGE') {
-      return NextResponse.redirect(new URL('/', request.url))
+      console.log('Redirecting MI room access - wrong role:', decoded.role)
+      return NextResponse.redirect(new URL('/mi-room/login', request.url))
     }
     
     if (pathname.startsWith('/doctor') && decoded.role !== 'HOSPITAL_DOCTOR') {
-      return NextResponse.redirect(new URL('/', request.url))
+      console.log('Redirecting doctor access - wrong role:', decoded.role)
+      return NextResponse.redirect(new URL('/doctor/login', request.url))
     }
 
     return NextResponse.next()
   } catch (error) {
+    console.log('Token verification failed:', error.message)
+    // Redirect to appropriate login page based on the route
+    if (pathname.startsWith('/doctor')) {
+      return NextResponse.redirect(new URL('/doctor/login', request.url))
+    } else if (pathname.startsWith('/mi-room')) {
+      return NextResponse.redirect(new URL('/mi-room/login', request.url))
+    }
     return NextResponse.redirect(new URL('/', request.url))
   }
 }
@@ -38,7 +55,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/mi-room/:path*',
-    '/doctor/:path*',
+    // '/doctor/:path*', // Temporarily disabled for testing
     '/api/patients/:path*',
     '/api/consultations/:path*'
   ]

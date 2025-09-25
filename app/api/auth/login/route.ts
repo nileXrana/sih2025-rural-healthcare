@@ -58,13 +58,16 @@ export async function POST(request: NextRequest) {
         }
       })
       
-      const token = generateToken({
+      const tokenPayload = {
         userId: newUser.id,
         email: newUser.email,
         role: newUser.role,
         name: newUser.name,
         miRoomId: newUser.miRoomId
-      })
+      }
+      console.log('Generating token with payload:', tokenPayload)
+      const token = generateToken(tokenPayload)
+      console.log('Generated token:', token.substring(0, 50) + '...')
 
       const response = NextResponse.json({
         message: 'Login successful (Demo user created)',
@@ -92,13 +95,16 @@ export async function POST(request: NextRequest) {
     // For existing users - skip password verification for prototype
 
     // Generate JWT token
-    const token = generateToken({
+    const tokenPayload = {
       userId: user.id,
       email: user.email,
       role: user.role,
       name: user.name,
       miRoomId: user.miRoomId
-    })
+    }
+    console.log('Generating token for existing user with payload:', tokenPayload)
+    const token = generateToken(tokenPayload)
+    console.log('Generated token for existing user:', token.substring(0, 50) + '...')
 
     const response = NextResponse.json({
       message: 'Login successful',

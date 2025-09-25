@@ -40,8 +40,11 @@ export default function LoginForm({ title, role, redirectPath, className }: Logi
       const data = await response.json()
 
       if (response.ok) {
-        router.push(redirectPath)
+        console.log('Login successful, redirecting to:', redirectPath)
+        // Use window.location for immediate redirect
+        window.location.href = redirectPath
       } else {
+        console.log('Login failed:', data.error)
         setError(data.error || 'Login failed')
       }
     } catch (error) {
