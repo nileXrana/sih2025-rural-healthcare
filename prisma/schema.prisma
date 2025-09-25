@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum UserRole {
+  MI_ROOM_INCHARGE
+  HOSPITAL_DOCTOR
+  ADMIN
+}
+
+enum PatientStatus {
+  WAITING
+  IN_CONSULTATION
+  COMPLETED
+  REFERRED
+}
+
+enum ConsultationStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  name        String
+  role        UserRole
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // MI Room Incharge specific fields
+  miRoomId    String?
+  miRoom      MIRoom?  @relation(fields: [miRoomId], references: [id])
+
+  // Doctor specific fields
+  specialization String?
+  licenseNumber  String?
+
+  // Relations
+  consultationsAsIncharge Consultation[] @relation("InchargeConsultations")
+  consultationsAsDoctor   Consultation[] @relation("DoctorConsultations")
+  patientRegistrations    Patient[]
+  prescriptions          Prescription[]
+
+  @@map("users")
+}
+
+model MIRoom {
+  id        String   @id @default(cuid())
+  name      String
+  village   String
+  address   String
+  pincode   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  incharges     User[]
+  patients      Patient[]
+  consultations Consultation[]
+
+  @@map("mi_rooms")
+}
+
+model Patient {
+  id           String   @id @default(cuid())
+  name         String
+  age          Int
+  gender       String
+  phone        String?
+  address      String
+  village      String
+  aadharNumber String?  @unique
+  bloodGroup   String?
+  allergies    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  miRoomId        String
+  miRoom          MIRoom         @relation(fields: [miRoomId], references: [id])
+  registeredById  String
+  registeredBy    User           @relation(fields: [registeredById], references: [id])
+  consultations   Consultation[]
+  prescriptions   Prescription[]
+
+  @@map("patients")
+}
+
+model Consultation {
+  id          String            @id @default(cuid())
+  status      ConsultationStatus @default(PENDING)
+  symptoms    String
+  vitals      Json? // Blood pressure, temperature, oxygen saturation, etc.
+  diagnosis   String?
+  notes       String?
+  isUrgent    Boolean           @default(false)
+  scheduledAt DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  patientId   String
+  patient     Patient @relation(fields: [patientId], references: [id])
+  miRoomId    String
+  miRoom      MIRoom  @relation(fields: [miRoomId], references: [id])
+  inchargeId  String
+  incharge    User    @relation("InchargeConsultations", fields: [inchargeId], references: [id])
+  doctorId    String?
+  doctor      User?   @relation("DoctorConsultations", fields: [doctorId], references: [id])
+
+  prescriptions Prescription[]
+  appointments  Appointment[]
+
+  @@map("consultations")
+}
+
+model Prescription {
+  id          String   @id @default(cuid())
+  medicines   Json     // Array of medicine objects with name, dosage, frequency, duration
+  instructions String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  patientId      String
+  patient        Patient      @relation(fields: [patientId], references: [id])
+  consultationId String
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
+  prescribedById String
+  prescribedBy   User         @relation(fields: [prescribedById], references: [id])
+
+  @@map("prescriptions")
+}
+
+model Appointment {
+  id           String    @id @default(cuid())
+  scheduledAt  DateTime
+  notes        String?
+  isCompleted  Boolean   @default(false)
+  isCancelled  Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  consultationId String
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
+
+  @@map("appointments")
+}
