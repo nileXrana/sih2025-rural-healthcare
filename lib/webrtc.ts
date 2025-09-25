@@ -30,7 +30,8 @@ export class WebRTCManager {
         video: {
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          frameRate: { ideal: 30 }
+          frameRate: { ideal: 30 },
+          facingMode: 'user' // This ensures front camera for self-view
         },
         audio: {
           echoCancellation: true,

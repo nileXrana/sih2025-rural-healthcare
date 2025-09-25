@@ -32,6 +32,7 @@ export default function ConsultationRoom({
   const [consultationNotes, setConsultationNotes] = useState('')
   const [diagnosis, setDiagnosis] = useState('')
   const [prescription, setPrescription] = useState('')
+  const [isLocalVideoMirrored, setIsLocalVideoMirrored] = useState(true)
 
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoRef = useRef<HTMLVideoElement>(null)
@@ -224,7 +225,17 @@ export default function ConsultationRoom({
               playsInline
               muted
               className="w-full h-full object-cover"
+              style={{ transform: isLocalVideoMirrored ? 'scaleX(-1)' : 'scaleX(1)' }}
             />
+            <div className="absolute top-2 right-2">
+              <button
+                onClick={() => setIsLocalVideoMirrored(!isLocalVideoMirrored)}
+                className="bg-black bg-opacity-50 text-white p-1 rounded text-xs hover:bg-opacity-70"
+                title="Toggle mirror"
+              >
+                {isLocalVideoMirrored ? '🔄' : '🔄'}
+              </button>
+            </div>
           </div>
 
           {/* Controls */}
@@ -286,6 +297,19 @@ export default function ConsultationRoom({
               )}
             >
               <div className={cn("w-6 h-6 rounded-full", isRecording ? "bg-white" : "border-2 border-white")} />
+            </button>
+
+            <button
+              onClick={() => setIsLocalVideoMirrored(!isLocalVideoMirrored)}
+              className={cn(
+                "p-3 rounded-full transition-colors",
+                isLocalVideoMirrored ? "bg-blue-600 text-white" : "bg-gray-600 text-white"
+              )}
+              title="Toggle video mirror"
+            >
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+              </svg>
             </button>
           </div>
         </div>
