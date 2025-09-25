@@ -47,7 +47,7 @@ export function middleware(request: NextRequest) {
 
     return NextResponse.next()
   } catch (error) {
-    console.log('Token verification failed:', error.message)
+    console.log('Token verification failed:', error instanceof Error ? error.message : 'Unknown error')
     // Redirect to appropriate login page based on the route
     if (pathname.startsWith('/doctor')) {
       return NextResponse.redirect(new URL('/doctor/login', request.url))

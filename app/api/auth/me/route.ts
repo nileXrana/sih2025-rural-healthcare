@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.log('API /auth/me - Token verification failed:', error.message)
+    console.log('API /auth/me - Token verification failed:', error instanceof Error ? error.message : 'Unknown error')
     return NextResponse.json(
       { error: 'Invalid token' },
       { status: 401 }
